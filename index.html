@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jocelyne K - Commandez maintenant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #e8f5e9 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b35 0%, #25D366 50%, #ff8c42 100%);
+            opacity: 0.03;
+            z-index: 0;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.95) 0%, rgba(255, 140, 66, 0.95) 100%);
+            border-radius: 24px;
+            padding: 60px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(255, 107, 53, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            font-size: 1.3em;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 300;
+        }
+
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .category-tab {
+            padding: 15px 35px;
+            background: #ffffff;
+            border: 2px solid #f0f0f0;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #555555;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .category-tab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.2);
+            border-color: #ff6b35;
+        }
+
+        .category-tab.active {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+            color: white;
+            border-color: #ff6b35;
+            box-shadow: 0 6px 25px rgba(255, 107, 53, 0.3);
+        }
+
+        .products-gallery {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+
+        .product-card {
+            background: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 2px solid #f0f0f0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+            position: relative;
+        }
+
+        .product-card.hidden {
+            display: none;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            border-color: #ff6b35;
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.2);
+        }
+
+        .product-card-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #fff5f0 0%, #f0fff4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+        }
+
+        .product-card-info {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .product-card-info h3 {
+            color: #333333;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .product-card-info p {
+            color: #777777;
+            font-size: 0.95em;
+        }
+
+        /* Modal Catalogue */
+        .catalog-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .catalog-modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 40px;
+        }
+
+        .catalog-content {
+            background: #ffffff;
+            border-radius: 24px;
+            max-width: 1200px;
+            width: 100%;
+            position: relative;
+            animation: slideUp 0.4s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .catalog-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .catalog-close:hover {
+            background: #ff8c42;
+            transform: rotate(90deg);
+        }
+
+        .catalog-header {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+            padding: 40px;
+            border-radius: 24px 24px 0 0;
+            text-align: center;
+        }
+
+        .catalog-header h2 {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .catalog-header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2em;
+        }
+
+        .catalog-body {
+            padding: 40px;
+        }
+
+        .catalog-items-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .catalog-item {
+            background: #f8f9fa;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .catalog-item:hover {
+            border-color: #ff6b35;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.2);
+        }
+
+        .catalog-item.selected {
+            border-color: #25D366;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+        }
+
+        .catalog-item-checkbox {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 5;
+            transition: all 0.3s ease;
+        }
+
+        .catalog-item.selected .catalog-item-checkbox {
+            background: #25D366;
+            border-color: #25D366;
+            color: white;
+        }
+
+        .catalog-item-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #fff5f0 0%, #f0fff4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5em;
+        }
+
+        .catalog-item-info {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .catalog-item-info h4 {
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .catalog-item-info p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .selected-count {
+            background: linear-gradient(135deg, #25D366 0%, #20BA5A 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .selected-count.show {
+            display: block;
+        }
+
+        .catalog-form-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 16px;
+            border: 2px solid #25D366;
+        }
+
+        .catalog-form-section h3 {
+            color: #ff6b35;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333333;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .form-group label .required {
+            color: #ff6b35;
+            margin-left: 3px;
+        }
+
+        .editable-input,
+        .editable-textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            background: #ffffff;
+            color: #333333;
+            min-height: 48px;
+            cursor: text;
+        }
+
+        .editable-textarea {
+            min-height: 80px;
+        }
+
+        .editable-input:focus,
+        .editable-textarea:focus {
+            outline: none;
+            border-color: #25D366;
+            box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.1);
+        }
+
+        .editable-input:empty:before,
+        .editable-textarea:empty:before {
+            content: attr(data-placeholder);
+            color: #999999;
+            font-style: italic;
+        }
+
+        .error-message {
+            color: #ff6b35;
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .whatsapp-btn {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #25D366 0%, #20BA5A 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.3em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4);
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(37, 211, 102, 0.5);
+        }
+
+        .whatsapp-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .whatsapp-icon {
+            font-size: 1.2em;
+            margin-right: 10px;
+        }
+
+        .payment-badge {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 1em;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+            border-radius: 24px;
+            color: white;
+            padding: 50px;
+            text-align: center;
+            margin-top: 60px;
+            box-shadow: 0 10px 40px rgba(255, 107, 53, 0.2);
+        }
+
+        .footer h3 {
+            margin-bottom: 20px;
+            font-size: 2em;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .footer p {
+            margin: 12px 0;
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .footer a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s ease;
+            text-decoration: underline;
+        }
+
+        .footer a:hover {
+            color: #25D366;
+        }
+
+        @media (max-width: 1024px) {
+            .products-gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .catalog-items-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .content {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 40px 30px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .products-gallery {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .catalog-items-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .catalog-body {
+                padding: 25px 20px;
+            }
+
+            .content {
+                grid-template-columns: 1fr !important;
+                gap: 30px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gradient-bg"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>✨ Collection Exclusive Jocelyne K</h1>
+            <p>Découvrez nos produits et commandez en toute simplicité</p>
+        </div>
+
+        <div class="content" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; margin-bottom: 60px;">
+            <div class="product-section" style="background: #ffffff; border-radius: 24px; padding: 40px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); border: 2px solid #f0f0f0;">
+                <div style="width: 100%; height: 500px; background: linear-gradient(135deg, #fff5f0 0%, #f0fff4 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 30px; border: 3px solid #ff6b35; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255, 107, 53, 0.1), transparent); transform: rotate(45deg); animation: shimmer 3s infinite;"></div>
+                    <span style="font-size: 10em; position: relative; z-index: 1; filter: drop-shadow(0 10px 30px rgba(255, 107, 53, 0.3));" id="mainProductEmoji">✨</span>
+                </div>
+                <div style="text-align: center;">
+                    <h3 style="color: #ff6b35; font-size: 2em; margin-bottom: 20px; font-weight: 700;" id="mainProductTitle">Produit en Vedette</h3>
+                    <p style="color: #555555; line-height: 1.8; font-size: 1.1em;" id="mainProductDescription">
+                        Découvrez notre sélection exclusive de produits de qualité. Cliquez sur une catégorie ci-dessous pour explorer notre catalogue complet.
+                    </p>
+                </div>
+            </div>
+
+            <div style="background: #ffffff; border-radius: 24px; padding: 40px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); border: 2px solid #25D366;">
+                <h2 style="color: #ff6b35; margin-bottom: 25px; font-size: 2em; text-align: center; font-weight: 700;">Comment commander</h2>
+                
+                <div style="background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%); color: white; padding: 16px 24px; border-radius: 50px; text-align: center; margin-bottom: 30px; font-weight: 700; font-size: 1.1em; box-shadow: 0 6px 25px rgba(255, 107, 53, 0.3); animation: pulse 2s ease-in-out infinite;">
+                    💰 Paiement à la livraison
+                </div>
+
+                <div style="background: linear-gradient(135deg, #fff5f0 0%, #f0fff4 100%); padding: 25px; border-radius: 16px; margin-bottom: 30px; border: 2px solid #ffe5d9;">
+                    <div style="display: flex; align-items: center; margin-bottom: 18px; color: #333333; font-size: 1.05em; font-weight: 500;">
+                        <span style="font-size: 1.8em; margin-right: 15px; min-width: 40px;">1️⃣</span>
+                        <span>Choisissez votre catégorie de produit</span>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-bottom: 18px; color: #333333; font-size: 1.05em; font-weight: 500;">
+                        <span style="font-size: 1.8em; margin-right: 15px; min-width: 40px;">2️⃣</span>
+                        <span>Sélectionnez vos articles préférés</span>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-bottom: 18px; color: #333333; font-size: 1.05em; font-weight: 500;">
+                        <span style="font-size: 1.8em; margin-right: 15px; min-width: 40px;">3️⃣</span>
+                        <span>Remplissez vos informations</span>
+                    </div>
+                    <div style="display: flex; align-items: center; color: #333333; font-size: 1.05em; font-weight: 500;">
+                        <span style="font-size: 1.8em; margin-right: 15px; min-width: 40px;">4️⃣</span>
+                        <span>Commandez sur WhatsApp</span>
+                    </div>
+                </div>
+
+                <p style="text-align: center; color: #666666; font-size: 0.95em; line-height: 1.6;">
+                    📞 Notre équipe vous contactera pour confirmer votre commande
+                </p>
+            </div>
+        </div>
+
+        <h2 style="text-align: center; color: #ff6b35; font-size: 2.5em; margin-bottom: 20px; font-weight: 800;">Nos Catégories</h2>
+
+        <div class="category-tabs">
+            <div class="category-tab active" onclick="filterCategory('femme')">
+                👗 Mode Femme
+            </div>
+            <div class="category-tab" onclick="filterCategory('homme')">
+                👔 Mode Homme
+            </div>
+        </div>
+
+        <div class="products-gallery">
+            <!-- Mode Femme -->
+            <div class="product-card" data-category="femme" onclick="openCatalog('Sacs Femme', '👜')">
+                <div class="product-card-image">👜</div>
+                <div class="product-card-info">
+                    <h3>Sacs</h3>
+                    <p>Voir le catalogue</p>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="femme" onclick="openCatalog('Chaussures Femme', '👠')">
+                <div class="product-card-image">👠</div>
+                <div class="product-card-info">
+                    <h3>Chaussures</h3>
+                    <p>Voir le catalogue</p>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="femme" onclick="openCatalog('Ceintures Femme', '⚡')">
+                <div class="product-card-image">⚡</div>
+                <div class="product-card-info">
+                    <h3>Ceintures</h3>
+                    <p>Voir le catalogue</p>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="femme" onclick="openCatalog('Lunettes Femme', '👓')">
+                <div class="product-card-image">👓</div>
+                <div class="product-card-info">
+                    <h3>Lunettes</h3>
+                    <p>Voir le catalogue</p>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="femme" onclick="openCatalog('Chapeaux Femme', '👒')">
+                <div class="product-card-image">👒</div>
+                <div class="product-card-info">
+                    <h3>Chapeaux</h3>
+                    <p>Voir le catalogue</p>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="femme" onclick="openCatalog('Bracelets Femme', '📿')">
+                <div class="product-card-image">📿</div>
+                <div class="product-card-info">
+                    <h3>Bracelets</h3>
+                    <p>Voir le catalogue</p>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="femme" onclick="openCatalog('Boucles d\'Oreilles', '💎')">
+                <div class="product-card-image">💎</div>
+                <div class="product-card-info">
+                    <h3>Boucles d'Oreilles</h3>
+                    <p>Voir le catalogue</p>
+                </div>
+            </div>
+
+            <!-- Mode Homme -->
+            <div class="product-card hidden" data-category="homme" onclick="openCatalog('Chaussures Homme', '👞')">
+                <div class="product-card-image">👞</div>
+                <div class="product-card-info">
+                    <h3>Chaussures</h3>
+                    <p>Voir le catalogue</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Catalogue -->
+        <div class="catalog-modal" id="catalogModal">
+            <div class="catalog-content">
+                <button class="catalog-close" onclick="closeCatalog()">×</button>
+                
+                <div class="catalog-header">
+                    <h2 id="catalogTitle">Catalogue</h2>
+                    <p>Sélectionnez vos articles préférés</p>
+                </div>
+
+                <div class="catalog-body">
+                    <div class="selected-count" id="selectedCount">
+                        ✓ <span id="countNumber">0</span> article(s) sélectionné(s)
+                    </div>
+
+                    <div class="catalog-items-grid" id="catalogItems">
+                        <!-- Les articles seront ajoutés dynamiquement ici -->
+                    </div>
+
+                    <div class="catalog-form-section">
+                        <h3>Finaliser votre commande</h3>
+                        
+                        <div class="payment-badge">
+                            💰 Paiement à la livraison
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                Nom
+                                <span class="required">*</span>
+                            </label>
+                            <div 
+                                contenteditable="true"
+                                id="catalogCustomerName" 
+                                class="editable-input"
+                                data-placeholder="Votre nom"
+                            ></div>
+                            <div class="error-message" id="catalogNameError">Veuillez entrer votre nom</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                Adresse de livraison
+                                <span class="required">*</span>
+                            </label>
+                            <div 
+                                contenteditable="true"
+                                id="catalogDeliveryAddress" 
+                                class="editable-textarea"
+                                data-placeholder="Votre adresse complète de livraison"
+                            ></div>
+                            <div class="error-message" id="catalogAddressError">Veuillez entrer votre adresse de livraison</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                Numéro de téléphone
+                                <span class="required">*</span>
+                            </label>
+                            <div 
+                                contenteditable="true"
+                                id="catalogCustomerPhone" 
+                                class="editable-input"
+                                data-placeholder="+225 XX XX XX XX XX"
+                            ></div>
+                            <div class="error-message" id="catalogPhoneError">Veuillez entrer votre numéro de téléphone</div>
+                        </div>
+
+                        <button type="button" class="whatsapp-btn" onclick="handleCatalogOrder()" id="orderButton">
+                            <span class="whatsapp-icon">💬</span>
+                            Commander sur WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <h3>Jocelyne K</h3>
+            <p>📍 Cocody, Abidjan</p>
+            <p>📞 <a href="tel:+2250779212054">+225 07 79 21 20 54</a></p>
+            <p>💬 <a href="https://wa.me/2250779212054" target="_blank">Contactez-nous sur WhatsApp</a></p>
+            <p style="margin-top: 20px; font-size: 0.95em; opacity: 0.9;">
+                Votre satisfaction est notre priorité
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let selectedItems = [];
+        let currentCatalogType = '';
+
+        // Catalogues de produits (vous pouvez remplacer les emojis par des URLs d'images)
+        const catalogData = {
+            'Sacs Femme': [
+                { id: 1, name: 'Sac Élégant Noir', emoji: '👜', image: 'https://example.com/sac1.jpg' },
+                { id: 2, name: 'Sac à Main Marron', emoji: '👜', image: 'https://example.com/sac2.jpg' },
+                { id: 3, name: 'Sac Bandoulière Rouge', emoji: '👜', image: 'https://example.com/sac3.jpg' },
+                { id: 4, name: 'Sac Porté Épaule', emoji: '👜', image: 'https://example.com/sac4.jpg' },
+                { id: 5, name: 'Sac Cabas Chic', emoji: '👜', image: 'https://example.com/sac5.jpg' },
+                { id: 6, name: 'Sac Seau Tendance', emoji: '👜', image: 'https://example.com/sac6.jpg' }
+            ],
+            'Chaussures Femme': [
+                { id: 7, name: 'Escarpins Noirs', emoji: '👠', image: 'https://example.com/chaussure1.jpg' },
+                { id: 8, name: 'Sandales à Talons', emoji: '👠', image: 'https://example.com/chaussure2.jpg' },
+                { id: 9, name: 'Bottines Cuir', emoji: '👠', image: 'https://example.com/chaussure3.jpg' },
+                { id: 10, name: 'Ballerines Confort', emoji: '👠', image: 'https://example.com/chaussure4.jpg' },
+                { id: 11, name: 'Compensées Élégantes', emoji: '👠', image: 'https://example.com/chaussure5.jpg' },
+                { id: 12, name: 'Talons Hauts Rouges', emoji: '👠', image: 'https://example.com/chaussure6.jpg' }
+            ],
+            'Ceintures Femme': [
+                { id: 13, name: 'Ceinture Cuir Noir', emoji: '⚡', image: 'https://example.com/ceinture1.jpg' },
+                { id: 14, name: 'Ceinture Tressée', emoji: '⚡', image: 'https://example.com/ceinture2.jpg' },
+                { id: 15, name: 'Ceinture Dorée', emoji: '⚡', image: 'https://example.com/ceinture3.jpg' },
+                { id: 16, name: 'Ceinture Large', emoji: '⚡', image: 'https://example.com/ceinture4.jpg' },
+                { id: 17, name: 'Ceinture Fine Marron', emoji: '⚡', image: 'https://example.com/ceinture5.jpg' }
+            ],
+            'Lunettes Femme': [
+                { id: 18, name: 'Lunettes Soleil Classiques', emoji: '👓', image: 'https://example.com/lunettes1.jpg' },
+                { id: 19, name: 'Lunettes Aviateur', emoji: '👓', image: 'https://example.com/lunettes2.jpg' },
+                { id: 20, name: 'Lunettes Cat Eye', emoji: '👓', image: 'https://example.com/lunettes3.jpg' },
+                { id: 21, name: 'Lunettes Rondes', emoji: '👓', image: 'https://example.com/lunettes4.jpg' },
+                { id: 22, name: 'Lunettes Oversize', emoji: '👓', image: 'https://example.com/lunettes5.jpg' }
+            ],
+            'Chapeaux Femme': [
+                { id: 23, name: 'Chapeau de Paille', emoji: '👒', image: 'https://example.com/chapeau1.jpg' },
+                { id: 24, name: 'Capeline Large', emoji: '👒', image: 'https://example.com/chapeau2.jpg' },
+                { id: 25, name: 'Béret Chic', emoji: '👒', image: 'https://example.com/chapeau3.jpg' },
+                { id: 26, name: 'Chapeau Fedora', emoji: '👒', image: 'https://example.com/chapeau4.jpg' },
+                { id: 27, name: 'Bob Tendance', emoji: '👒', image: 'https://example.com/chapeau5.jpg' }
+            ],
+            'Bracelets Femme': [
+                { id: 28, name: 'Bracelet Or', emoji: '📿', image: 'https://example.com/bracelet1.jpg' },
+                { id: 29, name: 'Bracelet Argent', emoji: '📿', image: 'https://example.com/bracelet2.jpg' },
+                { id: 30, name: 'Bracelet Perles', emoji: '📿', image: 'https://example.com/bracelet3.jpg' },
+                { id: 31, name: 'Bracelet Jonc', emoji: '📿', image: 'https://example.com/bracelet4.jpg' },
+                { id: 32, name: 'Bracelet Chaîne', emoji: '📿', image: 'https://example.com/bracelet5.jpg' }
+            ],
+            'Boucles d\'Oreilles': [
+                { id: 33, name: 'Boucles Créoles', emoji: '💎', image: 'https://example.com/boucles1.jpg' },
+                { id: 34, name: 'Boucles Pendantes', emoji: '💎', image: 'https://example.com/boucles2.jpg' },
+                { id: 35, name: 'Puces Diamant', emoji: '💎', image: 'https://example.com/boucles3.jpg' },
+                { id: 36, name: 'Boucles Dorées', emoji: '💎', image: 'https://example.com/boucles4.jpg' },
+                { id: 37, name: 'Boucles Perles', emoji: '💎', image: 'https://example.com/boucles5.jpg' }
+            ],
+            'Chaussures Homme': [
+                { id: 38, name: 'Derbies Cuir', emoji: '👞', image: 'https://example.com/chaussures-h1.jpg' },
+                { id: 39, name: 'Mocassins Élégants', emoji: '👞', image: 'https://example.com/chaussures-h2.jpg' },
+                { id: 40, name: 'Richelieu Classiques', emoji: '👞', image: 'https://example.com/chaussures-h3.jpg' },
+                { id: 41, name: 'Baskets Chic', emoji: '👞', image: 'https://example.com/chaussures-h4.jpg' },
+                { id: 42, name: 'Boots Homme', emoji: '👞', image: 'https://example.com/chaussures-h5.jpg' }
+            ]
+        };
+
+        function filterCategory(category) {
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.product-card').forEach(card => {
+                if (card.getAttribute('data-category') === category) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        function openCatalog(catalogType, emoji) {
+            currentCatalogType = catalogType;
+            selectedItems = [];
+            
+            document.getElementById('catalogTitle').textContent = catalogType;
+            
+            const catalogItems = document.getElementById('catalogItems');
+            catalogItems.innerHTML = '';
+            
+            const items = catalogData[catalogType] || [];
+            
+            items.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'catalog-item';
+                itemDiv.setAttribute('data-item-id', item.id);
+                itemDiv.onclick = function() { toggleItem(item.id, item.name, item.image); };
+                
+                itemDiv.innerHTML = `
+                    <div class="catalog-item-checkbox">
+                        <span class="check-icon"></span>
+                    </div>
+                    <div class="catalog-item-image">${item.emoji}</div>
+                    <div class="catalog-item-info">
+                        <h4>${item.name}</h4>
+                        <p>Cliquez pour sélectionner</p>
+                    </div>
+                `;
+                
+                catalogItems.appendChild(itemDiv);
+            });
+            
+            document.getElementById('catalogCustomerName').textContent = '';
+            document.getElementById('catalogDeliveryAddress').textContent = '';
+            document.getElementById('catalogCustomerPhone').textContent = '';
+            document.getElementById('catalogNameError').style.display = 'none';
+            document.getElementById('catalogAddressError').style.display = 'none';
+            document.getElementById('catalogPhoneError').style.display = 'none';
+            
+            updateSelectedCount();
+            
+            document.getElementById('catalogModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function toggleItem(itemId, itemName, itemImage) {
+            const itemDiv = document.querySelector(`[data-item-id="${itemId}"]`);
+            const index = selectedItems.findIndex(item => item.id === itemId);
+            
+            if (index > -1) {
+                selectedItems.splice(index, 1);
+                itemDiv.classList.remove('selected');
+                itemDiv.querySelector('.check-icon').textContent = '';
+            } else {
+                selectedItems.push({ id: itemId, name: itemName, image: itemImage });
+                itemDiv.classList.add('selected');
+                itemDiv.querySelector('.check-icon').textContent = '✓';
+            }
+            
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const countDiv = document.getElementById('selectedCount');
+            const countNumber = document.getElementById('countNumber');
+            
+            countNumber.textContent = selectedItems.length;
+            
+            if (selectedItems.length > 0) {
+                countDiv.classList.add('show');
+            } else {
+                countDiv.classList.remove('show');
+            }
+        }
+
+        function closeCatalog() {
+            document.getElementById('catalogModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            selectedItems = [];
+        }
+
+        document.getElementById('catalogModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCatalog();
+            }
+        });
+
+        function handleCatalogOrder() {
+            const name = document.getElementById('catalogCustomerName').textContent.trim();
+            const address = document.getElementById('catalogDeliveryAddress').textContent.trim();
+            const phone = document.getElementById('catalogCustomerPhone').textContent.trim();
+
+            document.getElementById('catalogNameError').style.display = 'none';
+            document.getElementById('catalogAddressError').style.display = 'none';
+            document.getElementById('catalogPhoneError').style.display = 'none';
+
+            let hasError = false;
+
+            if (!name) {
+                document.getElementById('catalogNameError').style.display = 'block';
+                hasError = true;
+            }
+
+            if (!address) {
+                document.getElementById('catalogAddressError').style.display = 'block';
+                hasError = true;
+            }
+
+            if (!phone) {
+                document.getElementById('catalogPhoneError').style.display = 'block';
+                hasError = true;
+            }
+
+            if (selectedItems.length === 0) {
+                alert('Veuillez sélectionner au moins un article');
+                return false;
+            }
+
+            if (hasError) {
+                return false;
+            }
+
+            // Créer le message avec les produits sélectionnés
+            let productsList = selectedItems.map(item => `- ${item.name}`).join('\n');
+            let imagesLinks = selectedItems.map(item => item.image).join('\n');
+
+            const message = `Bonjour Jocelyne K,
+
+Je souhaite commander les articles suivants de la catégorie "${currentCatalogType}" :
+
+${productsList}
+
+📋 Mes informations :
+👤 Nom : ${name}
+📍 Adresse : ${address}
+📞 Téléphone : ${phone}
+
+🖼️ Liens des images :
+${imagesLinks}
+
+Merci !`;
+
+            const whatsappUrl = `https://wa.me/2250779212054?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+
+            setTimeout(() => {
+                closeCatalog();
+            }, 500);
+        }
+    </script>
+</body>
+</html>
